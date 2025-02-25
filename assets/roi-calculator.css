@@ -1,0 +1,325 @@
+.page-container {
+  display: flex;
+  min-height: 100vh;
+  background: #F9FAFB;
+  max-width: 90rem; /* 1440px */
+  margin: 0 auto;
+  padding: 0;
+}
+
+.sidebar {
+  width: 16rem; /* 256px - slightly smaller */
+  background: white;
+  border-right: 1px solid #E5E7EB;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 0;
+  flex-shrink: 0;
+}
+
+.sidebar__profile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.sidebar__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.sidebar__profile span {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #111827;
+}
+
+.sidebar__nav {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 1.25rem;
+  color: #6B7280;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.sidebar__link:hover {
+  background: #F3F4F6;
+}
+
+.sidebar__link.active {
+  color: #2563EB;
+  background: #EFF6FF;
+}
+
+.sidebar__link svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+}
+
+.sidebar__footer {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid #E5E7EB;
+}
+
+.roi-calculator {
+  flex-grow: 1;
+  padding: 1.5rem;
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #F9FAFB;
+  max-width: none; /* Remove the max-width constraint */
+}
+
+.roi-calculator__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.roi-calculator__title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.roi-calculator__title h1 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin: 0;
+  color: #111827;
+}
+
+.roi-calculator__period {
+  color: #6B7280;
+  font-size: 0.875rem;
+  padding-left: 0.5rem;
+  border-left: 1px solid #E5E7EB;
+}
+
+.roi-calculator__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.roi-calculator__actions button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #E5E7EB;
+  border-radius: 6px;
+  background: white;
+  color: #374151;
+  font-size: 0.875rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.roi-calculator__stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: white;
+  padding: 1.25rem;
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+}
+
+.stat-card h3 {
+  font-size: 0.875rem;
+  color: #6B7280;
+  margin: 0 0 0.5rem 0;
+  font-weight: normal;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 1rem;
+}
+
+.stat-graph {
+  height: 40px;
+}
+
+.roi-calculator__main {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.roi-calculator__graph {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+}
+
+.graph-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.graph-header h3 {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #6B7280;
+  font-weight: normal;
+}
+
+.total-sales {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.trend-up {
+  color: #34D399;
+  font-size: 0.875rem;
+  margin-left: 0.5rem;
+  font-weight: normal;
+}
+
+.graph-container {
+  height: 300px;
+  border-radius: 4px;
+}
+
+.roi-calculator__sidebar {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+}
+
+.roi-calculator__sidebar h3 {
+  font-size: 0.875rem;
+  color: #6B7280;
+  margin: 0 0 1.5rem 0;
+  font-weight: normal;
+}
+
+.metric-row {
+  margin-bottom: 1.25rem;
+}
+
+.metric-row label {
+  display: block;
+  font-size: 0.875rem;
+  color: #6B7280;
+  margin-bottom: 0.5rem;
+}
+
+.metric-value {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+  color: #111827;
+  font-weight: 500;
+}
+
+.calculate-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background: #2563EB;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.875rem;
+  margin-top: 1rem;
+}
+
+.roi-calculator__profile {
+  background: #1F2937;
+  padding: 1.25rem;
+  border-radius: 8px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profile-image {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #374151;
+}
+
+.profile-details h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: white;
+}
+
+.profile-details p {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.875rem;
+  color: #9CA3AF;
+  line-height: 1.25;
+}
+
+.profile-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.action-btn {
+  background: transparent;
+  border: 1px solid #4B5563;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.book-meeting {
+  background: #2563EB;
+  color: white;
+  border: none;
+  padding: 0.625rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  margin-left: 0.5rem;
+} 

@@ -70,5 +70,9 @@
     {%- if settings.predictive_search_enabled -%}
       <script src="{{ 'component-predictive-search.js' | asset_url }}" defer="defer"></script>
     {%- endif -%}
+
+    <!-- ROI Calculator Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer="defer"></script>
+    <script src="{{ 'roi-calculator.js' | asset_url }}" defer="defer"></script>
   </body>
 </html>

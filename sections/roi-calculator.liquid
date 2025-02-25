@@ -1,0 +1,208 @@
+{{ 'roi-calculator.css' | asset_url | stylesheet_tag }}
+
+<div class="page-container">
+  <div class="sidebar">
+    <div class="sidebar__profile">
+      <img src="https://i.pravatar.cc/96" alt="Paul Denault" class="sidebar__avatar" width="32" height="32">
+      <span>Paul Denault</span>
+    </div>
+    <nav class="sidebar__nav">
+      <a href="#" class="sidebar__link">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M3 4h14M3 8h14M3 12h14M3 16h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Home
+      </a>
+      <a href="#" class="sidebar__link">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M16 5H4v10h12V5z" stroke="currentColor" stroke-width="2"/>
+          <path d="M7 8h6M7 12h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Orders
+      </a>
+      <a href="#" class="sidebar__link">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M4 5h12v10H4z" stroke="currentColor" stroke-width="2"/>
+          <path d="M8 8h4M8 12h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Products
+      </a>
+      <a href="#" class="sidebar__link">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="2"/>
+          <path d="M10 7v6M7 10h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Customers
+      </a>
+      <a href="#" class="sidebar__link">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M4 5h12v10H4z" stroke="currentColor" stroke-width="2"/>
+          <path d="M7 8h6M7 12h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Content
+      </a>
+      <a href="#" class="sidebar__link">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M10 2v16M2 10h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Finance
+      </a>
+      <a href="#" class="sidebar__link active">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M16 5H4v10h12V5z" stroke="currentColor" stroke-width="2"/>
+          <path d="M7 8l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Analytics
+      </a>
+      <a href="#" class="sidebar__link">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M4 5h12v10H4z" stroke="currentColor" stroke-width="2"/>
+          <path d="M8 8h4M8 12h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Marketing
+      </a>
+      <a href="#" class="sidebar__link">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M10 2v16M2 10h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Discounts
+      </a>
+    </nav>
+    <div class="sidebar__footer">
+      <a href="#" class="sidebar__link">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M10 2v16M2 10h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Settings
+      </a>
+    </div>
+  </div>
+
+  <div class="roi-calculator">
+    <div class="roi-calculator__header">
+      <div class="roi-calculator__title">
+        <h1>Your ROI Calculator</h1>
+        <span class="roi-calculator__period">365 days</span>
+      </div>
+      <div class="roi-calculator__actions">
+        <button>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M13.5 10.5V13.5H2.5V10.5H1V13.5C1 14.33 1.67 15 2.5 15H13.5C14.33 15 15 14.33 15 13.5V10.5H13.5Z" fill="currentColor"/>
+            <path d="M8.75 10.62L11.3 8.07L12.36 9.13L8 13.5L3.64 9.13L4.7 8.07L7.25 10.62V1H8.75V10.62Z" fill="currentColor"/>
+          </svg>
+          Download
+        </button>
+        <button>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M12.5 3.5H10.5V2.5C10.5 1.67 9.83 1 9 1H7C6.17 1 5.5 1.67 5.5 2.5V3.5H3.5C2.67 3.5 2 4.17 2 5V13C2 13.83 2.67 14.5 3.5 14.5H12.5C13.33 14.5 14 13.83 14 13V5C14 4.17 13.33 3.5 12.5 3.5ZM7 2.5H9V3.5H7V2.5ZM12.5 13H3.5V5H12.5V13Z" fill="currentColor"/>
+            <path d="M8 6.5C6.62 6.5 5.5 7.62 5.5 9C5.5 10.38 6.62 11.5 8 11.5C9.38 11.5 10.5 10.38 10.5 9C10.5 7.62 9.38 6.5 8 6.5Z" fill="currentColor"/>
+          </svg>
+          Share
+        </button>
+      </div>
+    </div>
+
+    <div class="roi-calculator__stats">
+      <div class="stat-card">
+        <h3>Gross sales</h3>
+        <div class="stat-value">US$3.1M</div>
+        <div class="stat-graph"></div>
+      </div>
+      <div class="stat-card">
+        <h3>AVG Monthly Increase</h3>
+        <div class="stat-value">60.53%</div>
+        <div class="stat-graph"></div>
+      </div>
+      <div class="stat-card">
+        <h3>EcomExperts Investment</h3>
+        <div class="stat-value">2,630</div>
+      </div>
+      <div class="stat-card">
+        <h3>ROI</h3>
+        <div class="stat-value">2,702</div>
+        <div class="stat-graph"></div>
+      </div>
+    </div>
+
+    <div class="roi-calculator__main">
+      <div class="roi-calculator__graph">
+        <div class="graph-header">
+          <h3>Total sales over time</h3>
+          <div class="total-sales">US$2,738,616.72 <span class="trend-up">+55%</span></div>
+        </div>
+        <div class="graph-container"></div>
+      </div>
+      
+      <div class="roi-calculator__sidebar">
+        <h3>Total sales breakdown</h3>
+        <div class="metric-row">
+          <label>Monthly Traffic</label>
+          <div class="metric-value">34,576 / Month <span class="trend-up">+10%</span></div>
+        </div>
+        <div class="metric-row">
+          <label>Current Conversion Rate</label>
+          <div class="metric-value">1.2% <span class="trend-up">+10%</span></div>
+        </div>
+        <div class="metric-row">
+          <label>EcomExperts Conversion Rate</label>
+          <div class="metric-value">2.4% <span class="trend-up">+100%</span></div>
+        </div>
+        <div class="metric-row">
+          <label>Current AOV</label>
+          <div class="metric-value">US$58,430.00</div>
+        </div>
+        <div class="metric-row">
+          <label>EcomExperts AOV</label>
+          <div class="metric-value">US$72,537.00 <span class="trend-up">+24%</span></div>
+        </div>
+        <div class="metric-row">
+          <label>Current Revenue</label>
+          <div class="metric-value">US$58,430.00</div>
+        </div>
+        <div class="metric-row">
+          <label>Projected Revenue</label>
+          <div class="metric-value">US$2,126.41 <span class="trend-up">+55%</span></div>
+        </div>
+        <button class="calculate-btn">Calculate</button>
+      </div>
+    </div>
+
+    <div class="roi-calculator__profile">
+      <div class="profile-info">
+        <img src="https://i.pravatar.cc/96" alt="Paul Denault" class="profile-image" width="48" height="48">
+        <div class="profile-details">
+          <h3>Paul Denault</h3>
+          <p>Chief Revenue Officer</p>
+          <p>EcomExperts</p>
+        </div>
+      </div>
+      <div class="profile-actions">
+        <button class="action-btn">💬</button>
+        <button class="action-btn">📞</button>
+        <button class="action-btn">📅</button>
+        <button class="book-meeting">BOOK MEETING</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "ROI Calculator",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Your ROI Calculator"
+    }
+  ],
+  "presets": [
+    {
+      "name": "ROI Calculator"
+    }
+  ]
+}
+{% endschema %} 

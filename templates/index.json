@@ -115,11 +115,18 @@
         "columns_desktop": 3,
         "columns_mobile": "2"
       }
+    },
+    "roi_calculator": {
+      "type": "roi-calculator",
+      "settings": {
+        "title": "Your ROI Calculator"
+      }
     }
   },
   "order": [
     "image_banner",
     "image_with_text_UnGP37",
-    "fist-of-collections"
+    "fist-of-collections",
+    "roi_calculator"
   ]
 }

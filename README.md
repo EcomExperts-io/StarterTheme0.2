@@ -56,13 +56,13 @@ Product galleries use Swiper for touch-friendly interactions:
 
 ## Component Documentation
 
-### Header Component
-The header combines Alpine.js for UI state management and includes:
-- Mobile-responsive navigation
-- Search functionality with predictive results
-- Cart integration
+### Header Implementation
 
-Example of Alpine.js usage in the header:
+The header combines Alpine.js for UI state management and Liquid AJAX Cart for cart functionality. Here's how these libraries are used together to create a seamless user experience:
+
+#### Alpine.js Implementation
+The header uses Alpine.js for managing search functionality:
+
 ```liquid
 <header
   x-data="{ searchOpen: false, searchTerm: '' }"
@@ -71,39 +71,208 @@ Example of Alpine.js usage in the header:
 >
 ```
 
-### Product Component
-The product page includes:
-- Variant selection (dropdown or button style)
-- Image gallery with Swiper integration
-- Dynamic price and availability updates
-- Add to cart functionality with AJAX
-- Product recommendations
+The search toggle uses Alpine's `$nextTick` for focus management, providing an enhanced user experience:
 
-The product component uses a custom element for handling variant changes:
+```liquid
+<div id="header-actions_search" 
+  @click="searchOpen = !searchOpen; $nextTick(() => { if (searchOpen) $refs.searchInput.focus() })">
+  {{ 'icon-search.svg' | inline_asset_content }}
+</div>
+```
+
+The search form uses Alpine's x-model and x-ref for input handling, creating a reactive search experience:
+
+```liquid
+<input
+  type="search"
+  name="q"
+  x-model="searchTerm"
+  x-ref="searchInput"
+  x-show="searchOpen"
+  @focus="$event.target.select()"
+>
+```
+
+The cart toggle behavior changes based on the cart type setting, allowing for flexible configuration:
+
+```liquid
+<a
+  id="header-cart-bubble"
+  {%- if settings.cart_type == 'drawer' -%}
+    @click.prevent="toggleCartDrawer"
+  {%- else -%}
+    href="{{ routes.cart_url }}"
+  {%- endif -%}
+>
+```
+
+#### Liquid AJAX Cart Integration
+The cart count in the header automatically updates through Liquid AJAX Cart bindings, ensuring the UI stays in sync with the cart state:
+
+```liquid
+<div data-cart-count data-ajax-cart-bind="item_count">
+  {{ cart.item_count }}
+</div>
+```
+
+This integration creates a responsive header that reacts to user interactions and cart changes without page reloads, enhancing the overall shopping experience.
+
+### Product Page Implementation
+
+The product page tells an interesting story of how variant selection works. Let's follow the flow from user interaction to UI updates:
+
+#### The Variant Selection Journey
+
+It starts with the `<variant-selector>` element, which can be rendered in two ways based on the theme settings:
+
+```liquid
+<variant-selector data-picker-type="{{ block.settings.picker_type }}">
+  {% if block.settings.picker_type == 'dropdown' %}
+    <!-- Dropdown lists for each option -->
+  {% else %}
+    <!-- Radio buttons for each option -->
+  {% endif %}
+</variant-selector>
+```
+
+When a user interacts with either the dropdowns or radio buttons, it triggers our variant change flow:
+
 ```javascript
 class ProductInfo extends HTMLElement {
   constructor() {
     super();
+    // Listen for any variant changes
     this.variantSelector?.addEventListener('change', this.onVariantChange.bind(this));
-    // Other event listeners...
   }
 
   onVariantChange(e) {
-    // Update product information based on selected variant
+    // Kick off the section render process
     this.renderSection();
   }
 }
 ```
 
-### Collection Component
-The collection page features:
-- Filtering system with multiple filter types
-- Price range filter with slider
-- Sorting options
-- Pagination
-- Dynamic updates without page reload
+The `renderSection` method is where the magic happens. It:
+1. Collects the currently selected options
+2. Makes a request to Shopify's Section Rendering API
+3. Updates specific parts of the page with the response:
 
-The collection component handles filter changes with debounced events:
+```javascript
+renderSection() {
+  // Request the section with current variant selections
+  fetch(`${this.dataset.url}?option_values=${this.selectedOptionValues}&section_id=${this.dataset.section}`)
+    .then((response) => response.text())
+    .then((responseText) => {
+      // Parse the returned HTML
+      const html = new DOMParser().parseFromString(responseText, 'text/html');
+      
+      // Get the new variant data
+      const variant = this.getSelectedVariant(html);
+
+      // Update various parts of the page
+      this.updateMedia(variant?.featured_media?.id);        // Update gallery
+      this.updateURL(variant?.id);                         // Update URL
+      this.updateVariantInputs(variant?.id);              // Update form inputs
+      
+      // Update specific sections using the new HTML
+      this.updateSourceFromDestination(html, `price-${this.dataset.section}`);
+      this.updateSourceFromDestination(html, `sku-${this.dataset.section}`);
+      this.updateSourceFromDestination(html, `inventory-${this.dataset.section}`);
+      this.updateSourceFromDestination(html, `add-to-cart-container-${this.dataset.section}`);
+    });
+}
+```
+
+This creates a seamless experience where selecting a new variant:
+1. Triggers the change event
+2. Fetches fresh HTML for the new variant
+3. Updates multiple parts of the page (price, SKU, inventory, etc.)
+4. All without a full page reload
+
+The beauty of this approach is that it leverages Shopify's section rendering while maintaining a smooth user experience. Each part of the page updates independently, and the URL updates to reflect the selected variant, making it shareable and maintaining browser history.
+
+#### Cart Event item-added-to-cart
+
+The product page also handles cart interactions through a custom event. When an item is added to the cart, we need to notify other components (like the cart drawer) about this change:
+
+```javascript
+class ProductInfo extends HTMLElement {
+  
+  onCartUpdate(e) {
+    const { requestState } = e.detail;
+    
+    // Only handle successful "add to cart" requests
+    if (requestState.requestType === 'add' && requestState.responseData?.ok) {
+      // Show cart drawer
+      document.body.classList.add('js-show-ajax-cart');
+      
+      // Dispatch event for other components
+      document.dispatchEvent(
+        new CustomEvent('item-added-to-cart', {
+          detail: requestState?.responseData?.body
+        })
+      );
+    }
+  }
+}
+```
+
+This event allows for:
+1. Automatic cart drawer opening when items are added
+2. Other components to react to cart changes
+3. Passing cart data to interested components
+
+#### Liquid AJAX Cart Integration
+
+The product page leverages Liquid AJAX Cart for form handling:
+
+```liquid
+<ajax-cart-product-form>
+  {% form 'product', product, id: product_form_id, novalidate: 'novalidate' %}
+    <input type="hidden" name="id" value="{{ selected_variant.id }}">
+    <div id="add-to-cart-container-{{ section.id }}">
+      <button
+        id="AddToCart-{{ section.id }}"
+        type="submit"
+        name="add"
+        {% if selected_variant.available == false %}disabled{% endif %}
+      >
+        {% if selected_variant.available == false %}
+          Sold out
+        {% else %}
+          Add to cart
+        {% endif %}
+      </button>
+    </div>
+  {% endform %}
+</ajax-cart-product-form>
+```
+
+The integration provides:
+1. Automatic form submission handling
+2. Real-time cart updates without page reloads
+3. Cart state synchronization across components
+
+When a product is added:
+1. Liquid AJAX Cart intercepts the form submission
+2. Handles the cart addition via AJAX
+3. Triggers the `liquid-ajax-cart:request-end` event
+4. Our code then handles the UI updates and notifications
+
+This creates a seamless cart experience where:
+- The cart updates instantly
+- The UI responds immediately
+- All components stay in sync
+- The user gets immediate feedback
+
+### Collection Page Implementation
+
+The collection page tells an interesting story of how filtering, sorting, and pagination work together through two main event handlers. Let's follow the flow of data through the system:
+
+#### Event Handling Flow
+
+The `<collection-info>` element manages two primary events:
+
 ```javascript
 class CollectionInfo extends HTMLElement {
   constructor() {
@@ -112,30 +281,231 @@ class CollectionInfo extends HTMLElement {
     this.addEventListener('change', this.debounceOnChange.bind(this));
     this.addEventListener('click', this.onClickHandler.bind(this));
   }
-  
-  // Event handlers for filtering and sorting
 }
 ```
 
-### Cart Components
-Cart functionality includes:
-- Cart drawer for quick access
-- Cart notification for added items
-- Quantity adjustments with AJAX updates
-- Cart page with full details
+1. **Filter Changes (`onChangeHandler`)**
+   - Triggered by filter form changes (checkboxes, price range, etc.)
+   - Debounced to prevent rapid consecutive updates
+   
+```javascript
+onChangeHandler = (event) => {
+  if (!event.target.matches('[data-render-section]')) return;
 
-The cart notification component listens for item-added-to-cart events:
+  const form = event.target.closest('form') || document.querySelector('#filters-form') || document.querySelector('#filters-form-drawer');
+  const formData = new FormData(form);
+  let searchParams = new URLSearchParams(formData).toString();
+
+  // Preserve search query if it exists
+  if (window.location.search.includes('?q=')) {
+    const existingParams = new URLSearchParams(window.location.search);
+    const qValue = existingParams.get('q');
+    searchParams = `q=${qValue}&${searchParams}`;
+  }
+
+  this.fetchSection(searchParams);
+};
+```
+
+   This handler:
+   - Checks if the changed element is meant to trigger a section update
+   - Finds the closest filter form (supports multiple form locations)
+   - Collects all filter values and converts to URL parameters
+   - Preserves search query if present
+   - Triggers section update with new parameters
+
+2. **Navigation Changes (`onClickHandler`)**
+   - Handles sorting and pagination and active filters badges clicks through data attributes
+   
+```javascript
+onClickHandler = (event) => {
+  if (event.target.matches('[data-render-section-url]')) {
+    event.preventDefault();
+    const searchParams = new URLSearchParams(event.target.dataset.renderSectionUrl.split('?')[1]).toString()
+    
+    this.fetchSection(searchParams);
+  }
+};
+```
+
+   This handler:
+   - Checks for elements with `data-render-section-url` attribute
+   - Extracts search parameters from the URL in the data attribute
+   - Prevents default link behavior
+   - Triggers section update with the extracted parameters
+
+   Used by elements like active filters and pagination:
+   
+```liquid
+<!-- Active filter removal -->
+<div class="filter active-filter-item"
+  data-render-section-url="{{ v.url_to_remove }}"
+>
+  <span>{{ f.label }}: {{ v.label }}</span>
+  <div class="filter-close">
+    {{- 'icon-close.svg' | inline_asset_content -}}
+  </div>
+</div>
+
+<!-- Clear all filters -->
+<div class="filter active-filter-item active-filter-clear-all"
+  data-render-section-url="{{ collection.url }}"
+>
+  <span>Clear all filters</span>
+</div>
+```
+
+The beauty of this implementation is that it creates a unified approach to handling all types of collection page interactions:
+- Filter changes (checkboxes, price ranges, etc.)
+- Sorting changes (price, name, etc.)
+- Pagination (next/previous page)
+- Active filter removal
+
+All of these interactions use the same underlying mechanism:
+1. Capture the interaction
+2. Extract or build the appropriate URL parameters
+3. Fetch the updated section HTML
+4. Replace the current section content
+
+This creates a seamless, SPA-like experience where the collection updates instantly without page reloads, maintaining the user's scroll position and state.
+
+### Cart Components
+
+The cart functionality is implemented through several interconnected components that work together to create a seamless shopping experience:
+
+#### Cart Drawer
+The cart drawer provides quick access to the cart without leaving the current page:
+
+```liquid
+<cart-drawer class="cart-drawer">
+  <div class="cart-drawer__header">
+    <h2>Your Cart</h2>
+    <button class="cart-drawer__close" @click="document.body.classList.remove('js-show-ajax-cart')">
+      {{ 'icon-close.svg' | inline_asset_content }}
+    </button>
+  </div>
+  
+  <div class="cart-drawer__content" data-ajax-cart-section>
+    <!-- Cart items rendered here -->
+  </div>
+</cart-drawer>
+```
+
+The drawer is toggled by adding/removing the `js-show-ajax-cart` class on the body element, which triggers CSS transitions for smooth opening and closing:
+
+```javascript
+// Opening the cart drawer (from product page)
+document.body.classList.add('js-show-ajax-cart');
+
+// Closing the cart drawer (from close button)
+document.body.classList.remove('js-show-ajax-cart');
+```
+
+The cart drawer content is automatically updated through Liquid AJAX Cart's section rendering:
+
+```liquid
+<div class="cart-drawer__content" data-ajax-cart-section>
+  {% render 'cart-drawer-items' %}
+  
+  <div class="cart-drawer__footer">
+    <div class="cart-drawer__totals">
+      <span>Subtotal</span>
+      <span data-ajax-cart-bind="cart.items_subtotal_price | money_with_currency">
+        {{ cart.items_subtotal_price | money_with_currency }}
+      </span>
+    </div>
+    
+    <a href="{{ routes.cart_url }}" class="button button--primary button--full-width">
+      View Cart
+    </a>
+    
+    <a href="{{ routes.checkout_url }}" class="button button--secondary button--full-width">
+      Checkout
+    </a>
+  </div>
+</div>
+```
+
+The `data-ajax-cart-bind` attributes ensure that cart totals are always up-to-date without requiring custom JavaScript.
+
+#### Cart Notification
+The cart notification component provides immediate feedback when items are added to the cart:
+
 ```javascript
 class CartNotification extends HTMLElement {
   constructor() {
     super();
-    // Event listeners...
+    // Listen for the custom event dispatched by the product page
     document.addEventListener('item-added-to-cart', (event) => this.updateNotification(event.detail));
   }
   
-  // Methods for showing/hiding notifications
+  updateNotification(cartData) {
+    // Extract the newly added item from the cart data
+    const newItem = cartData?.items[0];
+    if (!newItem) return;
+    
+    // Update notification content
+    this.querySelector('[data-cart-notification-product-title]').textContent = newItem.product_title;
+    this.querySelector('[data-cart-notification-image]').src = newItem.featured_image.url;
+    this.querySelector('[data-cart-notification-price]').innerHTML = formatMoney(newItem.final_price);
+    
+    // Show the notification
+    this.classList.add('is-active');
+    
+    // Set a timeout to hide the notification
+    clearTimeout(this.hideTimeout);
+    this.hideTimeout = setTimeout(() => {
+      this.classList.remove('is-active');
+    }, 5000);
+  }
 }
 ```
+
+The notification appears briefly when a product is added to the cart, showing:
+- Product image
+- Product title
+- Price
+- A link to the cart
+
+This provides immediate feedback to the user without interrupting their shopping experience.
+
+#### Cart Item Quantity Updates
+Cart item quantity updates are handled through Liquid AJAX Cart's data attributes:
+
+```liquid
+<div class="cart-item__quantity">
+  <button 
+    type="button" 
+    data-ajax-cart-request-button
+    data-href="{{ routes.cart_change_url }}"
+    data-quantity="{{ item.quantity | minus: 1 }}"
+    data-id="{{ item.key }}"
+    {% if item.quantity == 1 %}disabled{% endif %}
+  >
+    -
+  </button>
+  
+  <span>{{ item.quantity }}</span>
+  
+  <button 
+    type="button" 
+    data-ajax-cart-request-button
+    data-href="{{ routes.cart_change_url }}"
+    data-quantity="{{ item.quantity | plus: 1 }}"
+    data-id="{{ item.key }}"
+  >
+    +
+  </button>
+</div>
+```
+
+When a user clicks the plus or minus buttons:
+1. Liquid AJAX Cart intercepts the click
+2. Sends an AJAX request to update the cart
+3. Updates all cart-related elements on the page
+4. No custom JavaScript required
+
+This creates a responsive, interactive cart experience with minimal code.
 
 ### Search Components
 Search functionality includes:

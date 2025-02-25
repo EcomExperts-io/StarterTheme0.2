@@ -1,75 +1,68 @@
-# Base Theme
+# BlackMamba Theme
 
-A developer-first Shopify theme that prioritizes clean code, maintainability, and straightforward customization. Built with the modern developer workflow in mind, this theme serves as an ideal starting point for your Shopify projects.
+A developer-focused Shopify theme by Ecomexperts that prioritizes clean code, maintainability, and straightforward customization. Built with modern development practices in mind, this theme serves as an ideal starting point for your Shopify projects.
 
-## Introduction
+## Overview
 
-StarterTheme is crafted for developers who appreciate clean, well-structured code and minimal complexity. This theme strips away the bloat commonly found in marketplace themes to provide a solid foundation that you can build upon. The theme leverages custom web components for 90% of its JavaScript functionality, providing a modern, encapsulated, and maintainable approach to component development.
+BlackMamba is crafted for developers who appreciate clean, well-structured code and minimal complexity. This theme strips away unnecessary complexity to provide a solid foundation that you can build upon. The theme leverages custom web components for most of its JavaScript functionality, providing a modern, encapsulated, and maintainable approach to component development.
+
+## Features and Benefits
 
 ### Developer Benefits
-
-- **Clean Architecture**: Organized, logical file structure with clear separation of concerns
-- **Minimal Dependencies**: Only essential libraries and tools included
+- **Component-Based Architecture**: Organized with custom web components for encapsulated functionality
+- **Clean Structure**: Logical file organization with clear separation of concerns
+- **Minimal Dependencies**: Only essential libraries included (Alpine.js, Liquid AJAX Cart, Swiper)
 - **Modern Development**: Built using Shopify CLI 3.0 and Online Store 2.0 features
-- **Simplified Customization**: Well-documented sections and blocks for easy modifications
-- **Performance First**: Lightweight base with no unnecessary JavaScript or CSS
-- **Developer Experience**: Quick setup, clear naming conventions, and intuitive component structure
-- **Zero Build Tools**: No complex build process or tooling required - just pure JavaScript and CSS
+- **Performance Focused**: Lightweight base with optimized JavaScript and CSS
+- **Developer Experience**: Clear naming conventions and intuitive component structure
+- **Customization**: Well-documented sections and blocks for easy modifications
 
-The theme follows KISS (Keep It Simple, Stupid) principles, making it an excellent choice for both rapid development and teaching/learning Shopify theme development.
+### Key Features
+- Responsive header with mobile menu
+- AJAX cart with drawer and notification
+- Product page with variant selection and image gallery
+- Collection page with filtering and sorting
+- Predictive search functionality
+- Product recommendations
+- Localization support
 
-### Third-Party Libraries
+## Theme Architecture
 
-The theme uses a carefully selected set of third-party libraries to provide essential functionality while maintaining performance:
+BlackMamba follows a component-based architecture that emphasizes:
 
-- **Alpine.js** ([Documentation](https://alpinejs.dev/))
-  - Lightweight JavaScript framework for component behavior
-  - Used for UI state management and interactivity
-  - Perfect for declarative DOM manipulation
+### Custom Web Components
+The theme uses JavaScript custom elements (Web Components) for most interactive features:
+- Each component is self-contained with its own logic
+- Components communicate through events
+- Clean separation between markup (Liquid) and behavior (JS)
 
-- **Liquid AJAX Cart** ([Documentation](https://liquid-ajax-cart.js.org/))
-  - Cart functionality without custom JavaScript
-  - Real-time cart updates and synchronization
-  - Built specifically for Shopify themes
+### Alpine.js Integration
+Alpine.js is used for UI state management:
+- Declarative syntax for simple interactions
+- Used primarily in the header and cart components
+- Minimal footprint with maximum flexibility
 
-- **Swiper** ([Documentation](https://swiperjs.com/))
-  - Modern mobile touch slider
-  - Used for product image galleries
-  - Supports touch gestures and various navigation options
+### Liquid AJAX Cart
+Cart functionality is handled through Liquid AJAX Cart:
+- Real-time cart updates without page reloads
+- Automatic synchronization across components
+- Built specifically for Shopify themes
 
-These libraries were chosen for their minimal footprint, excellent documentation, and specific utility in solving common Shopify theme challenges.
+### Swiper Integration
+Product galleries use Swiper for touch-friendly interactions:
+- Mobile-optimized image browsing
+- Support for various media types
+- Customizable navigation options
 
-## Theme Components
+## Component Documentation
 
-This theme is a work in progress, built with a focus on creating clean, efficient components. We've built several key components from scratch while temporarily leveraging some components from Dawn theme as we continue development.
+### Header Component
+The header combines Alpine.js for UI state management and includes:
+- Mobile-responsive navigation
+- Search functionality with predictive results
+- Cart integration
 
-### Built From Scratch
-- Header
-- Cart drawer
-- Cart notification
-- Cart page
-- Collection page
-- Product page
-- Search page
-- Predictive search
-
-### Currently Using Dawn Components
-- Blog and article pages
-- Footer
-- Customer account pages
-
-Note: Our roadmap includes gradually replacing the Dawn-based components with our own implementations to maintain our minimalist, developer-friendly approach throughout the entire theme.
-
-## Component Code Walkthrough
-
-### Header Implementation
-
-The header combines Alpine.js for UI state management and Liquid AJAX Cart for cart functionality. Here's how these libraries are used:
-
-#### Alpine.js Implementation
-The header uses Alpine.js for managing search functionality:
-
-File: `sections/header.liquid`
+Example of Alpine.js usage in the header:
 ```liquid
 <header
   x-data="{ searchOpen: false, searchTerm: '' }"
@@ -78,216 +71,40 @@ File: `sections/header.liquid`
 >
 ```
 
-The search toggle uses Alpine's `$nextTick` for focus management:
+### Product Component
+The product page includes:
+- Variant selection (dropdown or button style)
+- Image gallery with Swiper integration
+- Dynamic price and availability updates
+- Add to cart functionality with AJAX
+- Product recommendations
 
-File: `sections/header.liquid`
-```liquid
-<div id="header-actions_search" 
-  @click="searchOpen = !searchOpen; $nextTick(() => { if (searchOpen) $refs.searchInput.focus() })">
-  {{ 'icon-search.svg' | inline_asset_content }}
-</div>
-```
-
-The search form uses Alpine's x-model and x-ref for input handling:
-
-File: `sections/header.liquid`
-```liquid
-<input
-  type="search"
-  name="q"
-  x-model="searchTerm"
-  x-ref="searchInput"
-  x-show="searchOpen"
-  @focus="$event.target.select()"
->
-```
-The cart toggle behavior changes based on the cart type setting:
-
-File: `sections/header.liquid`
-```liquid
-<a
-  id="header-cart-bubble"
-  {%- if settings.cart_type == 'drawer' -%}
-    @click.prevent="toggleCartDrawer"
-  {%- else -%}
-    href="{{ routes.cart_url }}"
-  {%- endif -%}
->
-```
-
-#### Liquid AJAX Cart Integration
-The cart count in the header automatically updates through Liquid AJAX Cart bindings:
-
-File: `sections/header.liquid`
-```liquid
-<div data-cart-count data-ajax-cart-bind="item_count">
-  {{ cart.item_count }}
-</div>
-```
-
-### Product Page Implementation
-
-The product page tells an interesting story of how variant selection works. Let's follow the flow:
-
-#### The Variant Selection Journey
-
-It starts with the `<variant-selector>` element, which can be rendered in two ways:
-
-File: `sections/main-product.liquid`
-```liquid
-<variant-selector data-picker-type="{{ block.settings.picker_type }}">
-  {% if block.settings.picker_type == 'dropdown' %}
-    <!-- Dropdown lists for each option -->
-  {% else %}
-    <!-- Radio buttons for each option -->
-  {% endif %}
-</variant-selector>
-```
-
-When a user interacts with either the dropdowns or radio buttons, it triggers our variant change flow:
-
-File: `assets/component-product-info.js`
-```js
+The product component uses a custom element for handling variant changes:
+```javascript
 class ProductInfo extends HTMLElement {
   constructor() {
     super();
-    // Listen for any variant changes
     this.variantSelector?.addEventListener('change', this.onVariantChange.bind(this));
+    // Other event listeners...
   }
 
   onVariantChange(e) {
-    // Kick off the section render process
+    // Update product information based on selected variant
     this.renderSection();
   }
 }
 ```
 
-The `renderSection` method is where the magic happens. It:
-1. Collects the currently selected options
-2. Makes a request to Shopify's Section Rendering API
-3. Updates specific parts of the page with the response:
+### Collection Component
+The collection page features:
+- Filtering system with multiple filter types
+- Price range filter with slider
+- Sorting options
+- Pagination
+- Dynamic updates without page reload
 
-File: `assets/component-product-info.js`
-```js
-renderSection() {
-  // Request the section with current variant selections
-  fetch(`${this.dataset.url}?option_values=${this.selectedOptionValues}&section_id=${this.dataset.section}`)
-    .then((response) => response.text())
-    .then((responseText) => {
-      // Parse the returned HTML
-      const html = new DOMParser().parseFromString(responseText, 'text/html');
-      
-      // Get the new variant data
-      const variant = this.getSelectedVariant(html);
-
-      // Update various parts of the page
-      this.updateMedia(variant?.featured_media?.id);        // Update gallery
-      this.updateURL(variant?.id);                         // Update URL
-      this.updateVariantInputs(variant?.id);              // Update form inputs
-      
-      // Update specific sections using the new HTML
-      this.updateSourceFromDestination(html, `price-${this.dataset.section}`);
-      this.updateSourceFromDestination(html, `sku-${this.dataset.section}`);
-      this.updateSourceFromDestination(html, `inventory-${this.dataset.section}`);
-      this.updateSourceFromDestination(html, `add-to-cart-container-${this.dataset.section}`);
-    });
-}
-```
-
-This creates a seamless experience where selecting a new variant:
-1. Triggers the change event
-2. Fetches fresh HTML for the new variant
-3. Updates multiple parts of the page (price, SKU, inventory, etc.)
-4. All without a full page reload
-
-The beauty of this approach is that it leverages Shopify's section rendering while maintaining a smooth user experience. Each part of the page updates independently, and the URL updates to reflect the selected variant, making it shareable and maintaining browser history.
-
-#### Cart Event item-added-to-cart
-
-The product page also handles cart interactions through a custom event. When an item is added to the cart, we need to notify other components (like the cart drawer) about this change:
-
-File: `assets/component-product-info.js`
-```js
-class ProductInfo extends HTMLElement {
-  
-  onCartUpdate(e) {
-    const { requestState } = e.detail;
-    
-    // Only handle successful "add to cart" requests
-    if (requestState.requestType === 'add' && requestState.responseData?.ok) {
-      // Show cart drawer
-      document.body.classList.add('js-show-ajax-cart');
-      
-      // Dispatch event for other components
-      document.dispatchEvent(
-        new CustomEvent('item-added-to-cart', {
-          detail: requestState?.responseData?.body
-        })
-      );
-    }
-  }
-}
-```
-
-This event allows for:
-1. Automatic cart drawer opening when items are added
-2. Other components to react to cart changes
-3. Passing cart data to interested components
-
-#### Liquid AJAX Cart Integration
-
-The product page leverages [Liquid AJAX Cart](https://liquid-ajax-cart.js.org/v2/product-forms/):
-
-File: `sections/main-product.liquid`
-```liquid
-<ajax-cart-product-form>
-  {% form 'product', product, id: product_form_id, novalidate: 'novalidate' %}
-    <input type="hidden" name="id" value="{{ selected_variant.id }}">
-    <div id="add-to-cart-container-{{ section.id }}">
-      <button
-        id="AddToCart-{{ section.id }}"
-        type="submit"
-        name="add"
-        {% if selected_variant.available == false %}disabled{% endif %}
-      >
-        {% if selected_variant.available == false %}
-          Sold out
-        {% else %}
-          Add to cart
-        {% endif %}
-      </button>
-    </div>
-  {% endform %}
-</ajax-cart-product-form>
-```
-
-The integration provides:
-1. Automatic form submission handling
-2. Real-time cart updates without page reloads
-3. Cart state synchronization across components
-
-When a product is added:
-1. Liquid AJAX Cart intercepts the form submission
-2. Handles the cart addition via AJAX
-3. Triggers the `liquid-ajax-cart:request-end` event
-4. Our code then handles the UI updates and notifications
-
-This creates a seamless cart experience where:
-- The cart updates instantly
-- The UI responds immediately
-- All components stay in sync
-- The user gets immediate feedback
-
-### Collection Page Implementation
-
-The collection page tells an interesting story of how filtering, sorting, and pagination work together through two main event handlers. Let's follow the flow:
-
-#### Event Handling Flow
-
-The `<collection-info>` element manages two primary events:
-
-File: `assets/component-collection-info.js`
-```js
+The collection component handles filter changes with debounced events:
+```javascript
 class CollectionInfo extends HTMLElement {
   constructor() {
     super();
@@ -295,74 +112,190 @@ class CollectionInfo extends HTMLElement {
     this.addEventListener('change', this.debounceOnChange.bind(this));
     this.addEventListener('click', this.onClickHandler.bind(this));
   }
+  
+  // Event handlers for filtering and sorting
 }
 ```
 
-1. **Filter Changes (`onChangeHandler`)**
-   - Triggered by filter form changes (checkboxes, price range, etc.)
-   - Debounced to prevent rapid consecutive updates
-   File: `assets/component-collection-info.js`
-```js
-onChangeHandler = (event) => {
-  if (!event.target.matches('[data-render-section]')) return;
+### Cart Components
+Cart functionality includes:
+- Cart drawer for quick access
+- Cart notification for added items
+- Quantity adjustments with AJAX updates
+- Cart page with full details
 
-  const form = event.target.closest('form') || document.querySelector('#filters-form') || document.querySelector('#filters-form-drawer');
-  const formData = new FormData(form);
-  let searchParams = new URLSearchParams(formData).toString();
-
-  // Preserve search query if it exists
-  if (window.location.search.includes('?q=')) {
-    const existingParams = new URLSearchParams(window.location.search);
-    const qValue = existingParams.get('q');
-    searchParams = `q=${qValue}&${searchParams}`;
+The cart notification component listens for item-added-to-cart events:
+```javascript
+class CartNotification extends HTMLElement {
+  constructor() {
+    super();
+    // Event listeners...
+    document.addEventListener('item-added-to-cart', (event) => this.updateNotification(event.detail));
   }
-
-  this.fetchSection(searchParams);
-};
+  
+  // Methods for showing/hiding notifications
+}
 ```
-   This handler:
-   - Checks if the changed element is meant to trigger a section update
-   - Finds the closest filter form (supports multiple form locations)
-   - Collects all filter values and converts to URL parameters
-   - Preserves search query if present
-   - Triggers section update with new parameters
 
-2. **Navigation Changes (`onClickHandler`)**
-   - Handles sorting and pagination and active filters badges clicks through data attributes
-   File: `assets/component-collection-info.js`
-```js
-onClickHandler = (event) => {
-  if (event.target.matches('[data-render-section-url]')) {
-    event.preventDefault();
-    const searchParams = new URLSearchParams(event.target.dataset.renderSectionUrl.split('?')[1]).toString()
-    
-    this.fetchSection(searchParams);
+### Search Components
+Search functionality includes:
+- Predictive search with live results
+- Search page with filtering
+- Keyboard navigation support
+
+The predictive search component fetches results as you type:
+```javascript
+class PredictiveSearch extends HTMLElement {
+  // Methods for handling search input and displaying results
+  getSearchResults(searchTerm) {
+    fetch(`/search/suggest?q=${encodeURIComponent(searchTerm)}&section_id=predictive-results`)
+      .then(response => response.text())
+      .then(text => {
+        // Parse and display search results
+      });
   }
-};
+}
 ```
-   This handler:
-   - Checks for elements with `data-render-section-url` attribute
-   - Extracts search parameters from the URL in the data attribute
-   - Prevents default link behavior
-   - Triggers section update with the extracted parameters
 
-   Used by elements like active filters and pagination:
-   File: `sections/main-collection.liquid`
-```liquid
-<!-- Active filter removal -->
-<div class="filter active-filter-item"
-  data-render-section-url="{{ v.url_to_remove }}"
->
-  <span>{{ f.label }}: {{ v.label }}</span>
-  <div class="filter-close">
-    {{- 'icon-close.svg' | inline_asset_content -}}
-  </div>
-</div>
+## File Structure
 
-<!-- Clear all filters -->
-<div class="filter active-filter-item active-filter-clear-all"
-  data-render-section-url="{{ collection.url }}"
->
-  <span>Clear all filters</span>
-</div>
 ```
+├── assets/              # JavaScript, CSS, and SVG files
+│   ├── *.js             # JavaScript components and utilities
+│   ├── *.css            # CSS files for styling
+│   └── *.svg            # SVG icons and images
+├── config/              # Theme settings and configuration
+│   ├── settings_data.json    # Theme settings data
+│   └── settings_schema.json  # Theme settings schema
+├── layout/              # Theme layout templates
+│   └── theme.liquid     # Main theme layout
+├── locales/             # Translation files
+│   ├── en.default.json  # Default English translations
+│   └── *.json           # Other language translations
+├── sections/            # Theme sections
+│   ├── header.liquid    # Header section
+│   ├── main-product.liquid  # Product page section
+│   └── ...              # Other sections
+├── snippets/            # Reusable components
+│   ├── component-*.liquid  # Component snippets
+│   └── ...              # Other snippets
+└── templates/           # Page templates
+    ├── product.json     # Product page template
+    ├── collection.json  # Collection page template
+    └── ...              # Other templates
+```
+
+## Installation and Setup
+
+### Prerequisites
+- [Shopify CLI](https://shopify.dev/themes/tools/cli) installed
+- [Node.js](https://nodejs.org/) (v14 or later)
+- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+
+### Development Setup
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/EcomExperts-io/Base.git
+   cd Base
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Connect to your Shopify store:
+   ```bash
+   shopify login
+   ```
+
+4. Start development server:
+   ```bash
+   shopify theme serve
+   ```
+
+### Deployment
+To deploy the theme to your Shopify store:
+```bash
+shopify theme push
+```
+
+## Customization
+
+### Theme Settings
+The theme includes comprehensive settings in the Shopify admin:
+- Logo and favicon
+- Color schemes
+- Typography options
+- Layout settings
+- Social media links
+- Cart behavior options
+
+### Creating New Sections
+To create a new section:
+1. Add a new Liquid file in the `sections/` directory
+2. Register the section in the theme editor schema
+3. Add the section to templates as needed
+
+### Modifying Components
+To modify existing components:
+1. Locate the component in the `snippets/` directory
+2. Make changes to the Liquid markup
+3. If needed, update the corresponding JavaScript in the `assets/` directory
+
+## Development Workflow
+
+### Code Standards
+This theme follows Shopify's code standards:
+- ESLint with Shopify configuration
+- Prettier with Liquid plugin
+- Consistent naming conventions
+
+### Testing Changes
+When making changes:
+1. Test on multiple devices and browsers
+2. Verify performance using Lighthouse
+3. Check for Liquid errors in the theme editor
+4. Validate accessibility compliance
+
+### Version Control
+Follow these practices for version control:
+1. Create feature branches from `development`
+2. Use descriptive commit messages
+3. Create pull requests for review
+4. Merge to `development` for testing
+5. Merge to `main` for production releases
+
+## Third-Party Libraries
+
+The theme uses a carefully selected set of third-party libraries:
+
+### Alpine.js (v3.14.8)
+- **Purpose**: Lightweight JavaScript framework for component behavior
+- **Usage**: UI state management and interactivity
+- **Documentation**: [Alpine.js Docs](https://alpinejs.dev/)
+
+### Liquid AJAX Cart (v2.1.1)
+- **Purpose**: Cart functionality without custom JavaScript
+- **Usage**: Real-time cart updates and synchronization
+- **Documentation**: [Liquid AJAX Cart Docs](https://liquid-ajax-cart.js.org/)
+
+### Swiper (v7.4.1)
+- **Purpose**: Modern mobile touch slider
+- **Usage**: Product image galleries
+- **Documentation**: [Swiper Docs](https://swiperjs.com/)
+
+## Contributing Guidelines
+
+Please refer to [CONTRIBUTING.md](CONTRIBUTING.md) for detailed information on how to contribute to this theme.
+
+### Quick Start for Contributors
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run linting: `npm run lint`
+5. Submit a pull request
+
+## License
+
+This theme is licensed under the [MIT License](LICENSE.md).

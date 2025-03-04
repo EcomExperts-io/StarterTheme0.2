@@ -1198,6 +1198,25 @@
         "image_overlay_opacity": {
           "label": "Image overlay opacity"
         },
+        "loading_strategy": {
+          "label": "Loading strategy",
+          "info": "Adds preloads and removes lazy loading to ensure that the images load faster",
+          "options__1": {
+            "label": "Lazy"
+          },
+          "options__2": {
+            "label": "Eager"
+          }
+
+        },
+        "preload_image": {
+          "label": "Preload Images",
+          "info": "Preloads the banner images to ensure they appear immediately when scrolling into view. Enable this for banners that are visible above the fold."
+        },
+        "disable_animation": {
+          "label": "Disable Animations",
+          "info": "Disable all animations including fade-in effects and image behaviors to decrease render delays"
+        },
         "image_height": {
           "label": "Banner height",
           "options__1": {

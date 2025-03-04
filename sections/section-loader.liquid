@@ -1,0 +1,83 @@
+
+<script>
+  // Cache duration in milliseconds (10 minutes)
+  const CACHE_EXPIRY_TIME = {{ section.settings.cache_duration }} * 60 * 1000;
+  const SECTION_CACHE_LOCAL_STORAGE_KEY = 'sectionCache';
+  
+  // Initialize section cache from localStorage or empty object if no cache exists
+  const sectionCache = JSON.parse(localStorage.getItem(SECTION_CACHE_LOCAL_STORAGE_KEY)) || {};
+  const sectionParser = new DOMParser();
+
+  // Listen for custom section events to dynamically load sections
+  document.addEventListener('loadSection', (e) => {
+    // Extract section ID from the event detail
+    const sectionId = e.detail.sectionId;
+    
+    // Find the container element where the section should be loaded
+    const sectionContainer = document.querySelector(`div[data-missing-id="${sectionId}"]`);
+    
+    // Validate that the container exists
+    if (!sectionContainer) {
+      console.error('Section container not found for:', sectionId);
+      return;
+    }
+
+    // Check if we have cached data for this section
+    const cachedData = sectionCache[sectionId];
+    const currentTime = Date.now();
+
+    // If cached data exists and hasn't expired, use it
+    if (cachedData && currentTime - cachedData.timestamp < CACHE_EXPIRY_TIME) {
+      console.log('Loading from cache:', sectionId);
+      const html = sectionParser.parseFromString(cachedData.html, 'text/html');
+      sectionContainer.before(html.querySelector('.shopify-section'));
+      sectionContainer.remove();
+      return;
+    }
+
+    // If no valid cache exists, fetch fresh section data
+    console.log('Fetching new section:', sectionId);
+
+    // Fetch section HTML using Shopify's section rendering API
+    fetch(`/index?section_id=${sectionId}`)
+      .then((response) => response.text())
+      .then((html) => {
+        // Update cache with new section data and timestamp
+        sectionCache[sectionId] = { html, timestamp: Date.now() };
+        localStorage.setItem(SECTION_CACHE_LOCAL_STORAGE_KEY, JSON.stringify(sectionCache));  
+        // Insert the new section HTML after the container
+        const newSection = sectionParser.parseFromString(html, 'text/html');
+        sectionContainer.before(newSection.querySelector('.shopify-section'));
+        sectionContainer.remove();
+      })
+      .catch((error) => console.error('Error loading section:', error));
+  });
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.section-loader.name",
+  "enabled_on": {
+    "templates": ["index"]
+  },
+  "settings": [
+    {
+      "type": "range",
+      "id": "cache_duration",
+      "label": "t:sections.section-loader.settings.cache_duration.label",
+      "min": 1,
+      "max": 60,
+      "step": 1,
+      "default": 10,
+      "unit": "min",
+      "info": "t:sections.section-loader.settings.cache_duration.info"
+    }
+  ],
+
+  "presets": [
+    {
+      "name": "t:sections.section-loader.name"
+    }
+  ]
+}
+{% endschema %}

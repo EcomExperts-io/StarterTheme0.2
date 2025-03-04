@@ -1200,7 +1200,7 @@
         },
         "loading_strategy": {
           "label": "Loading strategy",
-          "info": "Adds preloads and removes lazy loading to ensure that the images load faster",
+          "info": "Removes lazy loading and prioritizes the images to ensure they load quickly",
           "options__1": {
             "label": "Lazy"
           },
@@ -1216,6 +1216,18 @@
         "disable_animation": {
           "label": "Disable Animations",
           "info": "Disable all animations including fade-in effects and image behaviors to decrease render delays"
+        },
+        "lazy_load_section": {
+          "label": "Lazy Load Section",
+          "info": "⚠️ Lazy load the section. Only works on the homepage. Use min-height to prevent layout shifts."
+        },
+        "section_min_height_desktop": {
+          "label": "Section Min Height (Desktop)",
+          "info": "This is used to prevent layout shifts when the section is lazy loaded."
+        },
+        "section_min_height_mobile": {
+          "label": "Section Min Height (Mobile)",
+          "info": "This is used to prevent layout shifts when the section is lazy loaded."
         },
         "image_height": {
           "label": "Banner height",
@@ -3055,6 +3067,15 @@
       },
       "presets": {
         "name": "Video"
+      }
+    },
+    "section-loader": {
+      "name": "Section Loader",
+      "settings": {
+        "cache_duration": {
+          "label": "Cache Duration",
+          "info": "Cache duration in minutes"
+        }
       }
     },
     "slideshow": {

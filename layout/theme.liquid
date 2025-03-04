@@ -56,6 +56,9 @@
     {%- if settings.predictive_search_enabled -%}
       {{ 'component-predictive-search.css' | asset_url | stylesheet_tag }}
     {%- endif -%}
+    
+    {% comment %} Section Loader for lazy loaded sections on the homepage {% endcomment %}
+    {% section 'section-loader' %}
   </head>
 
   <body>

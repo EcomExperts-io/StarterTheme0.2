@@ -48,7 +48,7 @@
         "mobile_content_alignment": "center",
         "stack_images_on_mobile": false,
         "show_text_below": false,
-        "loading_strategy": "lazy",
+        "loading_strategy": "eager",
         "preload_images": true,
         "disable_animation": true,
         "lazy_load_section": true,

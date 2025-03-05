@@ -47,7 +47,13 @@
         "image_behavior": "none",
         "mobile_content_alignment": "center",
         "stack_images_on_mobile": false,
-        "show_text_below": false
+        "show_text_below": false,
+        "loading_strategy": "lazy",
+        "preload_images": true,
+        "disable_animation": true,
+        "lazy_load_section": true,
+        "section_min_height_desktop": 700,
+        "section_min_height_mobile": 390
       }
     },
     "fist-of-collections": {

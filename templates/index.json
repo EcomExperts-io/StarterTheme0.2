@@ -52,7 +52,7 @@
         "preload_images": false,
         "disable_animation": false,
         "lazy_load_section": false,
-        "section_min_height_desktop": 700,
+        "section_min_height_desktop": 750,
         "section_min_height_mobile": 390
       }
     },
